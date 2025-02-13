@@ -9,6 +9,9 @@ namespace ActionDemo
 {
 	public class CharacterController : MonoBehaviour
 	{
-
+		CharacterBrain brain;
+		CharacterStateController stateController;
+		CharacterMovementController movementController;
+		InputResolver inputResolver;
 	}
 }
