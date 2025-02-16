@@ -2,33 +2,63 @@
 {
 	public interface IState
 	{
+        public readonly struct Settings
+        {
+            public readonly float Duration;
+            public readonly bool IsLoop;
+        }
 
-	}
+        public struct RuntimeInfo
+        {
+            public float ElapsedTime;
+        }
+
+        Settings StateSettings { get; }
+		RuntimeInfo StateRuntimeInfo { get; }
+        void OnStateEnter();
+		void OnStateUpdate(float deltaTime);
+		void OnStateExit();
+    }
 
 	public abstract class StateBase<T> : IState where T : StateBehaviourBase
 	{
+        IState.RuntimeInfo runtimeInfo;
+
 		public LayerBase Layer { get; private set; }
+
 		public T StateBehaviour { get; private set; }
 
-		public StateBase(LayerBase layer, T behaviour)
+		public IState.Settings StateSettings { get; }
+
+        public IState.RuntimeInfo StateRuntimeInfo => runtimeInfo;
+
+        public StateBase(LayerBase layer, T behaviour, IState.Settings settings)
 		{
 			Layer = layer;
 			StateBehaviour = behaviour;
-		}
+            StateSettings = settings;
+            runtimeInfo = new IState.RuntimeInfo
+            {
+                ElapsedTime = -1f
+            };
+        }
 
 		public virtual void OnStateEnter()
 		{
-			StateBehaviour.OnStateBehaviourEnter();
+            runtimeInfo.ElapsedTime = 0f;
+            StateBehaviour.OnStateBehaviourEnter();
 		}
 
-		public virtual void OnStateUpdate()
+		public virtual void OnStateUpdate(float deltaTime)
 		{
-			StateBehaviour.OnStateBehaviourUpdate();
+            runtimeInfo.ElapsedTime += deltaTime;
+            StateBehaviour.OnStateBehaviourUpdate();
 		}
 
 		public virtual void OnStateExit()
 		{
-			StateBehaviour.OnStateBehaviourExit();
+            runtimeInfo.ElapsedTime = -1f;
+            StateBehaviour.OnStateBehaviourExit();
 		}
 	}
 }

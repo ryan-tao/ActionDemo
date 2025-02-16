@@ -2,12 +2,11 @@
 
 namespace ActionDemo
 {
-	public class CharacterActionStateMachine
+	public class CharacterActionStateMachine : StateMachineBase
 	{
 		InputResolver inputResolver;
 
 		LocomotionLayer locomotionLayer;
-		SkillLayer skillLayer;
 
 		IState CurrentState { get; set; }
 
@@ -15,10 +14,14 @@ namespace ActionDemo
 		{
 			this.inputResolver = inputResolver;
 			locomotionLayer = new LocomotionLayer();
-			skillLayer = new SkillLayer();
 		}
 
-		public void Dodge()
+        public override void Update()
+        {
+			locomotionLayer.Update(Time.deltaTime);
+        }
+
+        public void Dodge()
 		{
 			//ActivateLocomotion();
 			//var dodgeDirection = inputResolver.LastDirectionInput;

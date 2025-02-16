@@ -24,21 +24,21 @@ namespace ActionDemo
 		float currentVelocity;
 		float currentMoveSpeed;
 
-		public LocomotionLayer()
+		public LocomotionLayer() : base()
 		{
 			currentState = LocomotionState.Idle;
-
-			idleState = new IdleState(this, new IdleStateBehaviour());
-			moveState = new MoveState(this, new MoveStateBehaviour());
+			idleState = new IdleState(this, new IdleStateBehaviour(), new IState.Settings());
+			moveState = new MoveState(this, new MoveStateBehaviour(), new IState.Settings());
+			DefaultState = idleState;
 		}
 
-		public void Update()
+		public override void Update(float deltaTime)
 		{
 			UpdateRotateInput();
 			UpdateMovement();
 			ApplyMovement();
 
-
+			base.Update(deltaTime);
 		}
 
 		void UpdateRotateInput()
