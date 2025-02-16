@@ -1,24 +1,26 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using UnityEngine;
 
 namespace ActionDemo
 {
 	public abstract class StateBehaviourBase
 	{
-		public virtual void OnStateBehaviourEnter()
+		public Action<IState.RuntimeInfo> OnStateEnterBehaviour { get; set; }
+		public Action<IState.RuntimeInfo, float> OnStateUpdateBehaviour { get; set; }
+		public Action<IState.RuntimeInfo> OnStateExitBehaviour { get; set; }
+
+		public void OnStateEnter(IState.RuntimeInfo runtimeInfo)
 		{
+			OnStateEnterBehaviour?.Invoke(runtimeInfo);
 		}
 
-		public virtual void OnStateBehaviourUpdate()
+		public void OnStateUpdate(IState.RuntimeInfo runtimeInfo, float deltaTime)
 		{
+			OnStateUpdateBehaviour?.Invoke(runtimeInfo, deltaTime);
 		}
 
-		public virtual void OnStateBehaviourExit()
+		public void OnStateExit(IState.RuntimeInfo runtimeInfo)
 		{
+			OnStateExitBehaviour?.Invoke(runtimeInfo);
 		}
 	}
 }

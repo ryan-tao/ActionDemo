@@ -6,7 +6,7 @@ namespace ActionDemo
     {
         Guid Id { get; }
 
-        void Update();
+        void Update(float deltaTime);
     }
 
     public abstract class StateMachineBase : IStateMachine
@@ -18,6 +18,6 @@ namespace ActionDemo
             Id = Guid.NewGuid();
         }
 
-        public abstract void Update();
+        public abstract void Update(float deltaTime);
     }
 }

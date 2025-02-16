@@ -2,7 +2,7 @@
 {
     public abstract class LayerBase
 	{
-		public bool IsActive { get; protected set; }
+		public bool IsActive { get; set; }
 
         public IState CurrentState { get; protected set; }
 
@@ -16,14 +16,19 @@
         
 		public void Transition(IState toState)
 		{
-			if (!IsActive)
+			if (!IsActive || toState == null)
 			{
 				return;
 			}
 
-            CurrentState.OnStateExit();
+			if (toState.Equals(CurrentState))
+			{
+				return;
+			}
+
+            CurrentState?.OnStateExit();
 			CurrentState = toState;
-            CurrentState.OnStateEnter();
+            CurrentState?.OnStateEnter();
 		}
 
 		public virtual void Update(float deltaTime)

@@ -6,6 +6,12 @@
         {
             public readonly float Duration;
             public readonly bool IsLoop;
+
+            public Settings(float duration, bool isLoop)
+            {
+                Duration = duration;
+                IsLoop = isLoop;
+            }
         }
 
         public struct RuntimeInfo
@@ -46,19 +52,19 @@
 		public virtual void OnStateEnter()
 		{
             runtimeInfo.ElapsedTime = 0f;
-            StateBehaviour.OnStateBehaviourEnter();
+            StateBehaviour.OnStateEnter(runtimeInfo);
 		}
 
 		public virtual void OnStateUpdate(float deltaTime)
 		{
             runtimeInfo.ElapsedTime += deltaTime;
-            StateBehaviour.OnStateBehaviourUpdate();
+            StateBehaviour.OnStateUpdate(runtimeInfo, deltaTime);
 		}
 
 		public virtual void OnStateExit()
 		{
             runtimeInfo.ElapsedTime = -1f;
-            StateBehaviour.OnStateBehaviourExit();
+            StateBehaviour.OnStateExit(runtimeInfo);
 		}
 	}
 }

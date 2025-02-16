@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace ActionDemo
 {
@@ -33,11 +34,22 @@ namespace ActionDemo
             stateMachines.Remove(stateMachine.Id);
         }
 
+        public IStateMachine GetStateMachine(Guid id)
+        {
+            if (stateMachines.TryGetValue(id, out IStateMachine stateMachine))
+            {
+                return stateMachine;
+            }
+
+			UnityEngine.Debug.LogError("registerd state machine not found by id: " + id.ToString());
+            return null;
+		}
+
         void Update()
         {
             foreach (var stateMachine in stateMachines.Values)
             {
-                stateMachine.Update();
+                stateMachine.Update(Time.deltaTime);
             }
         }
     }
