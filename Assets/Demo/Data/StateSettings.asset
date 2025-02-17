@@ -16,18 +16,52 @@ MonoBehaviour:
   - StateName: None
     Duration: 0
     IsLoop: 1
+    StateNotifies: []
   - StateName: Move
     Duration: 0
     IsLoop: 1
+    StateNotifies: []
   - StateName: Dodge
     Duration: 1.633
     IsLoop: 0
+    StateNotifies:
+    - Time: 0
+      Duration: 1.633
+      FunctionName: 
+      Notify:
+        AvailableActions: 0
+        BufferableActions: 0
+        InputBufferingStartTime: 0
   - StateName: NormalAttack1
     Duration: 1.5
     IsLoop: 0
+    StateNotifies:
+    - Time: 0
+      Duration: 1.2
+      FunctionName: 
+      Notify:
+        AvailableActions: 0
+        BufferableActions: 2
+        InputBufferingStartTime: 0
   - StateName: NormalAttack2
     Duration: 1.567
     IsLoop: 0
+    StateNotifies:
+    - Time: 0
+      Duration: 1.2
+      FunctionName: 
+      Notify:
+        AvailableActions: 0
+        BufferableActions: 2
+        InputBufferingStartTime: 0
   - StateName: NormalAttack3
     Duration: 2.3
     IsLoop: 0
+    StateNotifies:
+    - Time: 0
+      Duration: 2
+      FunctionName: 
+      Notify:
+        AvailableActions: 0
+        BufferableActions: 0
+        InputBufferingStartTime: 0

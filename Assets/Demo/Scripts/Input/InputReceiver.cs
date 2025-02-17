@@ -6,10 +6,8 @@ namespace ActionDemo
 	public class InputReceiver : MonoBehaviour
 	{
 		const string MoveAction = "Move";
-		const string LookAction = "Look";
 		const string AttackAction = "Attack";
 		const string DodgeAction = "Dodge";
-		const string SkillAction = "Skill";
 
 		[SerializeField] CameraManager cameraManager;
 		[SerializeField] PlayerInput playerInput;
@@ -24,7 +22,6 @@ namespace ActionDemo
 		{
 			playerInput.actions[AttackAction].started += Attack;
 			playerInput.actions[AttackAction].canceled += AttackCanceled;
-			playerInput.actions[SkillAction].started += Skill;
 			playerInput.actions[DodgeAction].started += Dodge;
 		}
 
@@ -32,7 +29,6 @@ namespace ActionDemo
 		{
 			playerInput.actions[AttackAction].started -= Attack;
 			playerInput.actions[AttackAction].canceled -= AttackCanceled;
-			playerInput.actions[SkillAction].started -= Skill;
 			playerInput.actions[DodgeAction].started -= Dodge;
 		}
 
@@ -61,11 +57,6 @@ namespace ActionDemo
 		void AttackCanceled(InputAction.CallbackContext obj)
 		{
 			resolver?.OnPlayerInputAttack(false);
-		}
-
-		void Skill(InputAction.CallbackContext obj)
-		{
-			resolver?.OnPlayerInputSkillAttack();
 		}
 
 		void Dodge(InputAction.CallbackContext obj)

@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using ActionDemo.StateNotify;
+using UnityEngine;
 
 namespace ActionDemo
 {
@@ -7,6 +8,7 @@ namespace ActionDemo
 		const float MoveInputThreshold = 0.0001f;
 
 		InputReceiver inputReceiver;
+		InputConstraintNotify notify;
 		Vector3 lastMoveInput;
 		Vector3 lastRotateInput;
 		SkillType lastSkillInput;
@@ -29,13 +31,12 @@ namespace ActionDemo
 
 				if (IsSkillActionAvailable(bufferingSkillInput))
 				{
-					// 先行入力を優先で確認する
 					result = bufferingSkillInput;
 					bufferingSkillInput = SkillType.None;
+					lastSkillInput = SkillType.None;
 				}
 				else if (IsSkillActionAvailable(lastSkillInput))
 				{
-					// None以外返したら必ず先行入力をクリアする
 					result = lastSkillInput;
 					bufferingSkillInput = SkillType.None;
 					lastSkillInput = SkillType.None;
@@ -64,6 +65,11 @@ namespace ActionDemo
 			{
 				inputReceiver.SetResolver(null);
 			}
+		}
+
+		public void UpdateNotify(InputConstraintNotify notify)
+		{
+			this.notify = notify;
 		}
 
 		public void OnPlayerInputMove(Vector3 input)
@@ -98,12 +104,6 @@ namespace ActionDemo
 			BufferSkillInput(lastSkillInput);
 		}
 
-		public void OnPlayerInputSkillAttack()
-		{
-			lastSkillInput = SkillType.Skill;
-			BufferSkillInput(lastSkillInput);
-		}
-
 		void BufferSkillInput(SkillType skillType)
 		{
 			if (bufferingSkillInput != SkillType.None)
@@ -116,28 +116,54 @@ namespace ActionDemo
 
 		bool IsMoveActionAvailable()
 		{
-			return true;
+			if (notify == null)
+			{
+				return true;
+			}
+
+			if (notify.AvailableActions == CharacterActionCommand.None)
+			{
+				return false;
+			}
+
+			if (notify.AvailableActions == CharacterActionCommand.All)
+			{
+				return true;
+			}
+
+			return notify.AvailableActions.HasFlag(CharacterActionCommand.Move);
 		}
 
 		bool IsSkillActionAvailable(SkillType skillAttackType)
 		{
-			// Noneは対象外
 			if (skillAttackType == SkillType.None)
 			{
 				return false;
+			}
+
+			if (notify == null)
+			{
+				return true;
+			}
+
+			if (notify.AvailableActions == CharacterActionCommand.None)
+			{
+				return false;
+			}
+
+			if (notify.AvailableActions == CharacterActionCommand.All)
+			{
+				return true;
 			}
 
 			// 個別判定
 			switch (skillAttackType)
 			{
 				case SkillType.Dodge:
-					return true;
+					return notify.AvailableActions.HasFlag(CharacterActionCommand.Dodge);
 
 				case SkillType.NormalAttack:
-					return true;
-
-				case SkillType.Skill:
-					return true;
+					return notify.AvailableActions.HasFlag(CharacterActionCommand.NormalAttack);
 
 				default:
 					return false;

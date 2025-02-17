@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
+using ActionDemo.StateNotify;
+using static ActionDemo.IState;
 
 namespace ActionDemo
 {
@@ -10,13 +13,7 @@ namespace ActionDemo
             public string StateName;
             public float Duration;
             public bool IsLoop;
-
-            public Settings(float duration, bool isLoop)
-            {
-                StateName = "";
-                Duration = duration;
-                IsLoop = isLoop;
-            }
+            public StateNotify.StateNotify[] StateNotifies;
         }
 
         public struct RuntimeInfo
@@ -31,14 +28,17 @@ namespace ActionDemo
         void OnStateEnter();
 		void OnStateUpdate(float deltaTime);
 		void OnStateExit();
-    }
+        InputConstraintNotify GetLastInputConstraintNotify();
+
+	}
 
 	public abstract class StateBase<T> : IState
         where T : StateBehaviourBase
 	{
+		readonly List<int> notifyIndexList = new();
 		IState.RuntimeInfo runtimeInfo;
 
-        public Guid Id { get; }
+		public Guid Id { get; }
 
 		public ILayer Layer { get; private set; }
 
@@ -69,14 +69,59 @@ namespace ActionDemo
 
 		public virtual void OnStateUpdate(float deltaTime)
 		{
-            runtimeInfo.ElapsedTime += deltaTime;
-            StateBehaviour.OnStateUpdate(runtimeInfo, deltaTime);
+            TriggerInputConstraintNofity(runtimeInfo);
+			StateBehaviour.OnStateUpdate(runtimeInfo, deltaTime);
+			runtimeInfo.ElapsedTime += deltaTime;
 		}
 
 		public virtual void OnStateExit()
 		{
+            FinishInputConstraintNotify();
+			StateBehaviour.OnStateExit(runtimeInfo);
             runtimeInfo.ElapsedTime = 0f;
-            StateBehaviour.OnStateExit(runtimeInfo);
+		}
+
+		// ----------------------------------------------
+		// 以下は暫定対応
+		// ----------------------------------------------
+		public InputConstraintNotify GetLastInputConstraintNotify()
+		{
+			if (notifyIndexList.Count > 0)
+			{
+				return StateSettings.StateNotifies[^1].Notify;
+			}
+
+			return null;
+		}
+
+		void TriggerInputConstraintNofity(RuntimeInfo runtimeInfo)
+        {
+            var elapsedTime = runtimeInfo.ElapsedTime;
+            for (int i = 0; i < StateSettings.StateNotifies.Length; i++)
+            {
+                var notify = StateSettings.StateNotifies[i];
+                if (notify.Time <= elapsedTime && notify.Time + notify.Duration > elapsedTime)
+                {
+                    if (notifyIndexList.Contains(i))
+                    {
+                        continue;
+                    }
+
+                    notifyIndexList.Add(i);
+                }
+                else
+                {
+                    if (notifyIndexList.Contains(i))
+                    {
+                        notifyIndexList.Remove(i);
+					}
+                }
+            }
+        }
+
+        void FinishInputConstraintNotify()
+        {
+            notifyIndexList.Clear();
 		}
 	}
 }
