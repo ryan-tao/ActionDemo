@@ -8,5 +8,16 @@
 ・キャラ状態遷移に応じてモーションを再生する仕組み（AnimationManager辺り）  
 ・各種設定ファイル  
 
+
 特に、キャラ状態制御用StateMachineやStateNotifyをUnityのAnimatorControllerのStateMachineに頼れず、自前で作成している。
 そうすると、キャラ関連のロジック処理はアニメーションを依存せず、DedicatedServerなどで独立で処理することができる。
+
+
+操作方法：  
+・移動：Keyboard WSAD / Gamepad LeftStick  
+・回避：Mouse right button / Gamepad button south  
+・攻撃：Mouse left button / Gamepad button west  
+
+
+既知問題：  
+・回避や攻撃のモーションはRootMotionとして整備できてないため、Rootの移動や回転はモーション終了後に戻る  
