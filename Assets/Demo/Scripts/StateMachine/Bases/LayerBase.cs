@@ -1,19 +1,48 @@
 ﻿namespace ActionDemo
 {
-    public abstract class LayerBase
+	public interface ILayer
 	{
-		public bool IsActive { get; set; }
+		IStateMachine StateMachine { get; }
+		bool IsActive { get; }
+		IState CurrentState { get; }
+		IState DefaultState { get; }
+		IState NoneState { get; }
+		void SetActive(bool active);
+		void Transition(IState toState);
+		void Update(float deltaTime);
+	}
+
+    public abstract class LayerBase : ILayer
+	{
+		public IStateMachine StateMachine { get; }
+
+		public bool IsActive { get; private set; }
 
         public IState CurrentState { get; protected set; }
 
 		public IState DefaultState { get; protected set; }
 
-		public LayerBase()
+		public IState NoneState { get; protected set; }
+
+		public LayerBase(IStateMachine stateMachine)
 		{
+			StateMachine = stateMachine;
 			IsActive = false;
             CurrentState = null;
+			DefaultState = null;
+			NoneState = null;
         }
-        
+
+		public void SetActive(bool active)
+		{
+			if (!active)
+			{
+				Transition(NoneState);
+			}
+
+			IsActive = active;
+		}
+
 		public void Transition(IState toState)
 		{
 			if (!IsActive || toState == null)
@@ -21,7 +50,14 @@
 				return;
 			}
 
-			if (toState.Equals(CurrentState))
+			if (CurrentState == null)
+			{
+				CurrentState = toState;
+				CurrentState?.OnStateEnter();
+				return;
+			}
+
+			if (toState.Id.Equals(CurrentState.Id))
 			{
 				return;
 			}

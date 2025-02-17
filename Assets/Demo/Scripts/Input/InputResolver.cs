@@ -4,7 +4,7 @@ namespace ActionDemo
 {
 	public class InputResolver
 	{
-		const float MoveInputThreshold = 0.01f;
+		const float MoveInputThreshold = 0.0001f;
 
 		InputReceiver inputReceiver;
 		Vector3 lastMoveInput;
@@ -38,6 +38,7 @@ namespace ActionDemo
 					// None以外返したら必ず先行入力をクリアする
 					result = lastSkillInput;
 					bufferingSkillInput = SkillType.None;
+					lastSkillInput = SkillType.None;
 				}
 
 				return result;
@@ -93,19 +94,13 @@ namespace ActionDemo
 
 		public void OnPlayerInputDodge()
 		{
-			lastSkillInput = SkillType.DodgeSkill;
+			lastSkillInput = SkillType.Dodge;
 			BufferSkillInput(lastSkillInput);
 		}
 
 		public void OnPlayerInputSkillAttack()
 		{
-			lastSkillInput = SkillType.SkillAttack;
-			BufferSkillInput(lastSkillInput);
-		}
-
-		public void OnPlayerInputSpecial()
-		{
-			lastSkillInput = SkillType.SpecialAttack;
+			lastSkillInput = SkillType.Skill;
 			BufferSkillInput(lastSkillInput);
 		}
 
@@ -135,16 +130,13 @@ namespace ActionDemo
 			// 個別判定
 			switch (skillAttackType)
 			{
-				case SkillType.DodgeSkill:
+				case SkillType.Dodge:
 					return true;
 
 				case SkillType.NormalAttack:
 					return true;
 
-				case SkillType.SkillAttack:
-					return true;
-
-				case SkillType.SpecialAttack:
+				case SkillType.Skill:
 					return true;
 
 				default:

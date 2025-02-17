@@ -29,7 +29,7 @@
 				return false;
 			}
 
-			if (skillInput == SkillType.DodgeSkill)
+			if (skillInput == SkillType.Dodge)
 			{
 				stateMachine.Dodge();
 			}

@@ -1,11 +1,14 @@
-﻿using UnityEngine;
+﻿using ActionDemo.Animation;
+using UnityEngine;
 
 namespace ActionDemo
 {
 	public class CharacterController : MonoBehaviour, ISyncAnimatorMove
 	{
 		[SerializeField] InputReceiver inputReceiver;
+		[SerializeField] AnimationManager animationManager;
 		[SerializeField] LocomotionSettings locomotionSettings;
+		[SerializeField] StateSettings stateSettings;
 
 		InputResolver inputResolver;
 		CharacterStateMachine stateMachine;
@@ -19,11 +22,13 @@ namespace ActionDemo
 
 		void Awake()
 		{
+			animationManager.Initialize();
+
 			movement = new CharacterMovement();
 			state = new CharacterState();
 
 			inputResolver = new InputResolver(inputReceiver);
-			stateMachine = new CharacterStateMachine(transform, inputResolver, movement, locomotionSettings);
+			stateMachine = new CharacterStateMachine(inputResolver, movement, locomotionSettings, stateSettings, animationManager);
 			brain = new CharacterBrain(inputResolver, stateMachine);
 			stateController = new CharacterStateController(state);
 			movementController = new CharacterMovementController(transform, movement);
@@ -60,10 +65,10 @@ namespace ActionDemo
 			stateController.Update();
 		}
 
-		public void SyncAnimatorMove()
+		public void SyncAnimatorMove(Vector3 deltaPosition, Quaternion deltaRotation)
 		{
 			// キャラの移動や回転などを更新する
-			movementController.OnAnimatorMove(deltaTime);
+			movementController.OnAnimatorMove(deltaTime, deltaPosition, deltaRotation);
 		}
 
 		void UpdateTime()

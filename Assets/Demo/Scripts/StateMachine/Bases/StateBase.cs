@@ -1,14 +1,19 @@
-﻿namespace ActionDemo
+﻿using System;
+
+namespace ActionDemo
 {
 	public interface IState
 	{
-        public readonly struct Settings
+        [Serializable]
+        public struct Settings
         {
-            public readonly float Duration;
-            public readonly bool IsLoop;
+            public string StateName;
+            public float Duration;
+            public bool IsLoop;
 
             public Settings(float duration, bool isLoop)
             {
+                StateName = "";
                 Duration = duration;
                 IsLoop = isLoop;
             }
@@ -19,6 +24,8 @@
             public float ElapsedTime;
         }
 
+        Guid Id { get; }
+        ILayer Layer { get; }
         Settings StateSettings { get; }
 		RuntimeInfo StateRuntimeInfo { get; }
         void OnStateEnter();
@@ -26,11 +33,14 @@
 		void OnStateExit();
     }
 
-	public abstract class StateBase<T> : IState where T : StateBehaviourBase
+	public abstract class StateBase<T> : IState
+        where T : StateBehaviourBase
 	{
-        IState.RuntimeInfo runtimeInfo;
+		IState.RuntimeInfo runtimeInfo;
 
-		public LayerBase Layer { get; private set; }
+        public Guid Id { get; }
+
+		public ILayer Layer { get; private set; }
 
 		public T StateBehaviour { get; private set; }
 
@@ -38,14 +48,16 @@
 
         public IState.RuntimeInfo StateRuntimeInfo => runtimeInfo;
 
-        public StateBase(LayerBase layer, T behaviour, IState.Settings settings)
+		public StateBase(ILayer layer, T behaviour, IState.Settings settings)
 		{
+            Id = Guid.NewGuid();
 			Layer = layer;
 			StateBehaviour = behaviour;
+            StateBehaviour.State = this;
             StateSettings = settings;
             runtimeInfo = new IState.RuntimeInfo
             {
-                ElapsedTime = -1f
+                ElapsedTime = 0f
             };
         }
 
@@ -63,7 +75,7 @@
 
 		public virtual void OnStateExit()
 		{
-            runtimeInfo.ElapsedTime = -1f;
+            runtimeInfo.ElapsedTime = 0f;
             StateBehaviour.OnStateExit(runtimeInfo);
 		}
 	}

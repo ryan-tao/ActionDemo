@@ -4,7 +4,7 @@ namespace ActionDemo
 {
 	public interface ISyncAnimatorMove
 	{
-		void SyncAnimatorMove();
+		void SyncAnimatorMove(Vector3 deltaPosition, Quaternion deltaRotation);
 	}
 
 	[RequireComponent(typeof(Animator))]
@@ -12,9 +12,16 @@ namespace ActionDemo
 	{
 		public ISyncAnimatorMove SyncTarget { get; set; }
 
+		Animator animator;
+
+		void Awake()
+		{
+			animator = GetComponent<Animator>();
+		}
+
 		void OnAnimatorMove()
 		{
-			SyncTarget?.SyncAnimatorMove();
+			SyncTarget?.SyncAnimatorMove(animator.deltaPosition, animator.deltaRotation);
 		}
 	}
 }

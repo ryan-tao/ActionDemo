@@ -1,28 +1,36 @@
-﻿using UnityEngine;
+﻿using ActionDemo.Animation;
 
 namespace ActionDemo
 {
 	public class LocomotionLayer : LayerBase
 	{
-		enum LocomotionState
-		{
-			Move,
-			Dead,
-		}
-
-		MoveState moveState;
+		readonly NoneState noneState;
+		readonly MoveState moveState;
+		readonly DodgeState dodgeState;
 		
-		public LocomotionLayer(Transform targetRoot, InputResolver inputResolver, CharacterMovement movement, LocomotionSettings settings) : base()
+		public LocomotionLayer(IStateMachine stateMachine) : base(stateMachine)
 		{
-			var moveStateBehaviour = new MoveStateBehaviour(inputResolver, movement, settings);
-			moveState = new MoveState(this, moveStateBehaviour, new IState.Settings(1f, true));
+			var noneStateBehaviour = new NoneStateBehaviour();
+			var moveStateBehaviour = new MoveStateBehaviour();
+			var dodgeStateBehaviour = new DodgeStateBehaviour();
+
+			var stateSettings = stateMachine.StateSettings;
+			noneState = new NoneState(this, noneStateBehaviour, stateSettings.FindSettingsByName("None"));
+			moveState = new MoveState(this, moveStateBehaviour, stateSettings.FindSettingsByName("Move"));
+			dodgeState = new DodgeState(this, dodgeStateBehaviour, stateSettings.FindSettingsByName("Dodge"));
+			NoneState = noneState;
 			DefaultState = moveState;
 			CurrentState = moveState;
 		}
 
 		public void Move()
 		{
-			Transition(DefaultState);
+			Transition(moveState);
+		}
+
+		public void Dodge()
+		{
+			Transition(dodgeState);
 		}
 	}
 }

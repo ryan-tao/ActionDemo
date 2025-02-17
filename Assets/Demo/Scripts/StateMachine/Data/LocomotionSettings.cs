@@ -1,16 +1,12 @@
-﻿using System;
+﻿using UnityEngine;
 
 namespace ActionDemo
 {
-	[Serializable]
-	public class LocomotionSettings
+	[CreateAssetMenu(fileName = "LocomotionSettings", menuName = "ScriptableObjects/LocomotionSettings")]
+	public class LocomotionSettings : ScriptableObject
 	{
-		public float OnGroundThreshold = 0.5f;
-
 		public float MaxMoveVelocity = 5f;
-
-		public float AccelMoveTime = 0.1f;
-
-		public float DecelMoveTime = 0.1f;
+		public float AccelMoveTime = 0.5f;
+		public float DecelMoveTime = 0.5f;
 	}
 }

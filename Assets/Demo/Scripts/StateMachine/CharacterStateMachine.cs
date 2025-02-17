@@ -1,71 +1,56 @@
-﻿using UnityEngine;
+﻿using ActionDemo.Animation;
 
 namespace ActionDemo
 {
 	public class CharacterStateMachine : StateMachineBase
 	{
-		InputResolver inputResolver;
-		LocomotionLayer locomotionLayer;
+		readonly LocomotionLayer locomotionLayer;
+		readonly SkillLayer skillLayer;
 
-		public CharacterStateMachine(Transform targetRoot, InputResolver inputResolver, CharacterMovement movement, LocomotionSettings settings)
+		public CharacterStateMachine(InputResolver inputResolver, CharacterMovement movement, LocomotionSettings locomotionSettings, StateSettings stateSettings, AnimationManager animationManager)
+			:base(inputResolver, stateSettings, locomotionSettings, movement, animationManager)
 		{
-			this.inputResolver = inputResolver;
-			locomotionLayer = new LocomotionLayer(targetRoot, inputResolver, movement, settings);
+			locomotionLayer = new LocomotionLayer(this);
+			skillLayer = new SkillLayer(this);
 			ActivateLocomotion();
 		}
 
         public override void Update(float deltaTime)
         {
 			locomotionLayer.Update(deltaTime);
-        }
-
-        public void Dodge()
-		{
-			ActivateLocomotion();
-			var dodgeDirection = inputResolver.LastDirectionInput;
-			//locomotionLayer.Dodge(dodgeDirection);
+			skillLayer.Update(deltaTime);
 		}
 
-		public void Skill(SkillType type)
+		public void ActivateLocomotion()
 		{
-			//locomotionLayer.CancelMotion();
-			//attackLayer.SkillAttack(type, targetDirection);
+			skillLayer.SetActive(false);
+			locomotionLayer.SetActive(true);
+			locomotionLayer.Move();
 		}
 
 		public void Move()
 		{
-			var moveInput = inputResolver.LastMoveInput;
+			var moveInput = InputResolver.LastMoveInput;
 			if (moveInput.sqrMagnitude > 0f)
 			{
-				ActivateLocomotion();
+				skillLayer.SetActive(false);
+				locomotionLayer.SetActive(true);
 				locomotionLayer.Move();
 			}
 		}
 
-		public void Dead(Vector3 damageDirection)
+		public void Dodge()
 		{
-			ActivateLocomotion();
-			//locomotionLayer.Dead(damageDirection);
+			skillLayer.SetActive(false);
+			locomotionLayer.SetActive(true);
+			locomotionLayer.Dodge();
 		}
 
-		public void KnockBack(Vector3 damageDirection)
+		public void Skill(SkillType type)
 		{
-			//locomotionLayer.CancelMotion();
-			//attackLayer.CancelAttack();
-			//damageLayer.KnockBack(damageDirection);
-		}
-
-		public void KnockDown(Vector3 damageDirection)
-		{
-			//locomotionLayer.CancelMotion();
-			//attackLayer.CancelAttack();
-			//damageLayer.KnockDown(damageDirection);
-		}
-
-		void ActivateLocomotion()
-		{
-			locomotionLayer.IsActive = true;
-			locomotionLayer.Move();
+			locomotionLayer.SetActive(false);
+			skillLayer.SetActive(true);
+			skillLayer.Skill(type);
 		}
 	}
 }

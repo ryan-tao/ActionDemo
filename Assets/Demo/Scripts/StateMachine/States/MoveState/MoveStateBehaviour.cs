@@ -4,39 +4,42 @@ namespace ActionDemo
 {
 	public class MoveStateBehaviour : StateBehaviourBase
 	{
-		InputResolver inputResolver;
-		LocomotionSettings settings;
-		CharacterMovement movement;
 		float currentVelocity;
 		float deltaTime;
 
-		public MoveStateBehaviour(InputResolver inputResolver, CharacterMovement movement, LocomotionSettings settings)
+		public MoveStateBehaviour()
 		{
-			this.inputResolver = inputResolver;
-			this.movement = movement;
-			this.settings = settings;
+			OnStateEnterBehaviour = StartMovement;
 			OnStateUpdateBehaviour = UpdateMovement;
+		}
+
+		void StartMovement(IState.RuntimeInfo runtimeInfo)
+		{
+			StartMovementAnimation();
 		}
 
 		void UpdateMovement(IState.RuntimeInfo runtimeInfo, float deltaTime)
 		{
 			this.deltaTime = deltaTime;
-			UpdateRotateInput();
 			UpdateMovementInput();
-			UpdateCollision();
+			UpdateMovementAnimation();
 		}
 
 		void UpdateMovementInput()
 		{
-			movement.Acceleration = settings.MaxMoveVelocity / settings.AccelMoveTime;
-			movement.Deceleration = settings.MaxMoveVelocity / settings.DecelMoveTime;
+			var locomotionSettings = State.Layer.StateMachine.LocomotionSettings;
+			var movement = State.Layer.StateMachine.Movement;
 
+			movement.Acceleration = locomotionSettings.MaxMoveVelocity / locomotionSettings.AccelMoveTime;
+			movement.Deceleration = locomotionSettings.MaxMoveVelocity / locomotionSettings.DecelMoveTime;
+
+			var inputResolver = State.Layer.StateMachine.InputResolver;
 			var worldMove = inputResolver.LastMoveInput;
 			var move = new Vector3(worldMove.x, 0f, worldMove.z);
 			var inputMagnitude = move.magnitude;
 			if (inputMagnitude > 0f)
 			{
-				currentVelocity = Mathf.Min(currentVelocity + movement.Acceleration * deltaTime, settings.MaxMoveVelocity * inputMagnitude);
+				currentVelocity = Mathf.Min(currentVelocity + movement.Acceleration * deltaTime, locomotionSettings.MaxMoveVelocity * inputMagnitude);
 				movement.Direction = worldMove / inputMagnitude;
 			}
 			else
@@ -48,14 +51,19 @@ namespace ActionDemo
 			movement.Position += movement.Velocity * deltaTime;
 		}
 
-		void UpdateRotateInput()
+		void StartMovementAnimation()
 		{
-			// TODO
+			var animationManager = State.Layer.StateMachine.AnimationManager;
+			animationManager.Move();
 		}
 
-		void UpdateCollision()
+		void UpdateMovementAnimation()
 		{
-			// TODO
+			var animationManager = State.Layer.StateMachine.AnimationManager;
+			var locomotionSettings = State.Layer.StateMachine.LocomotionSettings;
+			var movement = State.Layer.StateMachine.Movement;
+			var moveSpeed = Mathf.InverseLerp(0f, locomotionSettings.MaxMoveVelocity, movement.Velocity.magnitude);
+			animationManager.SetMoveSpeed(moveSpeed);
 		}
 	}
 }

@@ -10,7 +10,6 @@ namespace ActionDemo
 		const string AttackAction = "Attack";
 		const string DodgeAction = "Dodge";
 		const string SkillAction = "Skill";
-		const string SpecialAction = "Special";
 
 		[SerializeField] CameraManager cameraManager;
 		[SerializeField] PlayerInput playerInput;
@@ -26,7 +25,6 @@ namespace ActionDemo
 			playerInput.actions[AttackAction].started += Attack;
 			playerInput.actions[AttackAction].canceled += AttackCanceled;
 			playerInput.actions[SkillAction].started += Skill;
-			playerInput.actions[SpecialAction].started += Special;
 			playerInput.actions[DodgeAction].started += Dodge;
 		}
 
@@ -35,7 +33,6 @@ namespace ActionDemo
 			playerInput.actions[AttackAction].started -= Attack;
 			playerInput.actions[AttackAction].canceled -= AttackCanceled;
 			playerInput.actions[SkillAction].started -= Skill;
-			playerInput.actions[SpecialAction].started -= Special;
 			playerInput.actions[DodgeAction].started -= Dodge;
 		}
 
@@ -71,14 +68,8 @@ namespace ActionDemo
 			resolver?.OnPlayerInputSkillAttack();
 		}
 
-		void Special(InputAction.CallbackContext obj)
-		{
-			resolver?.OnPlayerInputSpecial();
-		}
-
 		void Dodge(InputAction.CallbackContext obj)
 		{
-			//resolver?.UpdateFlickDirection(Vector3.zero);
 			resolver?.OnPlayerInputDodge();
 		}
 	}

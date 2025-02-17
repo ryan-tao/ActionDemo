@@ -4,6 +4,7 @@ namespace ActionDemo
 {
 	public abstract class StateBehaviourBase
 	{
+		public IState State { get; set; }
 		public Action<IState.RuntimeInfo> OnStateEnterBehaviour { get; set; }
 		public Action<IState.RuntimeInfo, float> OnStateUpdateBehaviour { get; set; }
 		public Action<IState.RuntimeInfo> OnStateExitBehaviour { get; set; }
