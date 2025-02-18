@@ -16,11 +16,18 @@
 後日ゆっくりリファクタリングしていく予定。
 
 
-操作方法：  
+操作方法  
 ・移動：Keyboard WSAD / Gamepad LeftStick  
 ・回避：Mouse right button / Gamepad button south  
 ・攻撃：Mouse left button / Gamepad button west  
 
 
-既知問題：  
+既知問題  
 ・回避や攻撃のモーションはRootMotionとして整備できてないため、Rootの移動や回転はモーション終了後に戻る  
+
+
+アセット  
+[Mixamo](https://www.mixamo.com/) から取得  
+・Paladin W/Prop Nordstrom ＋ Sword and Shield Pack  
+・Erika Archer With Bow/Arrow ＋ Pro Longbow Pack（未使用）  
+
